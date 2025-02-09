@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Registration</title>
+    <!-- Cropper.js CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/cropperjs/dist/cropper.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #fdfdfd;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        h1 {
+            color: #ff6f3c;
+            margin-bottom: 20px;
+        }
+
+        .form-container {
+            width: 90%;
+            max-width: 500px;
+            background: white;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 16px;
+            color: #333;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        #upload-label {
+            background-color: #ff6f3c;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        
+        /* Custom styling for Cropper.js handles */
+  .cropper-line,       /* The dashed lines around the crop box */
+  .cropper-point {     /* The touch points for resizing */
+      background-color: #ff6f3c; /* Set the handle color */
+  }
+
+  /* Resize handle corners */
+  .cropper-point {
+      width: 20px;    /* Increase the size of the touch points */
+      height: 20px;
+      border-radius: 50%; /* Make them rounded */
+  }
+
+  /* Dashed border for better visibility */
+  .cropper-dashed {
+      border-color: #ff6f3c;
+  }
+
+        #cropper-container {
+            display: none;
+            margin-bottom: 20px;
+        }
+
+        #cropper-container img {
+            max-width: 100%;
+            border-radius: 8px;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        button {
+            background-color: #ff6f3c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        #preview {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        #preview img {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 50%;
+            margin-top: 10px;
+            border: 2px solid #ff6f3c;
+        }
+
+        #send-data {
+            margin-top: 20px;
+            display: none;
+            margin-bottom: 20px;
+        }
+
+    #loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #ff6f3c;
+    display: none;
+    justify-content: center;
+    margin-top: 40px;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #ff6f3c;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+    </style>
+</head>
+<body>
+    <h1>Profile Registration</h1>
+    <div class="form-container">
+        <form id="registrationForm">
+            <label for="username">Enter your username:</label>
+            <input type="text" id="username" name="username" placeholder="Enter username" required />
+
+            <label id="upload-label" for="profilePicture">Upload Profile Picture</label>
+            <input type="file" id="profilePicture" accept="image/*" />
+
+            <div id="cropper-container">
+                <img id="croppingImage" alt="Cropping Area" />
+            </div>
+
+            <div class="button-container">
+                <button type="button" id="backBtn" style="display: none;">Back</button>
+                <button type="button" id="verifyBtn" style="display: none;">Verify</button>
+            </div>
+        </form>
+    </div>
+
+    <div id="preview">
+        <h3>Preview</h3>
+        <p id="previewName"></p>
+        <img id="previewImage" alt="Profile Preview" />
+    </div>
+    
+    <div id="loading" class="spinner-container">
+        <div class="spinner" style="justify-self: center;"></div>
+        <p>Creating your dashboard</p>
+        <p style="color: #000; justify-self: center;">It might take a minute ...</p>
+    </div>
+
+    <div class="send-data">
+    <button id="send-data">Send Data</button>
+    </div>
+
+    <!-- Cropper.js Script -->
+    <script src="https://unpkg.com/cropperjs/dist/cropper.min.js"></script>
+    <script>
+  
+
+    // Function to generate a unique device ID (UUID)
+    const generateUUID = () => {
+        return crypto.randomUUID();  // Available in modern browsers
+    };
+
+ console.log(generateUUID());
+
+// Function to check if a profile exists in IndexedDB
+ function handleProfileCheck () {
+
+    let accessToken = localStorage.getItem("accessToken");
+       
+
+    if (accessToken) {
+        const choice = confirm(`A profile  already exists. 
+Do you want to continue using it or create a new one? Click "OK" to keep using it, or "Cancel" to create a new one.`);
+
+        if (choice) {
+            alert(`Using existing profile`);
+            window.location.href = "http://127.0.0.1:5501/BACKEND/dashboard.html";  // Redirect to dashboard
+        } else {
+            alert("Creating a new profile will replace the existing one.");
+            localStorage.removeItem("accessToken");  // Reset device ID
+            localStorage.removeItem("profilePic");
+
+            const dbName = "ikutoke"; // Replace with your actual database name
+
+const request = indexedDB.deleteDatabase(dbName);
+
+request.onsuccess = function () {
+    console.log(`Database "${dbName}" deleted successfully.`);
+};
+
+request.onerror = function (event) {
+    console.error("Error deleting database:", event.target.error);
+};
+
+request.onblocked = function () {
+    console.warn("Database deletion is blocked. Close all tabs using the database and try again.");
+    alert("Database deletion is blocked. Close all tabs using the database and try again.");
+};
+
+        }
+    }
+};
+
+// Check for existing profile on page load
+window.onload = handleProfileCheck;
+
+
+// Function to store profile data in IndexedDB
+
+
+
+    const usernameInput = document.getElementById("username");
+    const profilePictureInput = document.getElementById("profilePicture");
+    const croppingImage = document.getElementById("croppingImage");
+    const cropperContainer = document.getElementById("cropper-container");
+    const backBtn = document.getElementById("backBtn");
+    const verifyBtn = document.getElementById("verifyBtn");
+    const previewName = document.getElementById("previewName");
+    const previewImage = document.getElementById("previewImage");
+    const sendDataBtn = document.getElementById("send-data");
+    const loading = document.getElementById("loading");
+    let cropper;
+
+    // Automatically replace spaces with underscores in username
+    usernameInput.addEventListener("input", () => {
+        usernameInput.value = usernameInput.value.replace(/\s/g, "_");
+    });
+
+    // Handle profile picture upload
+
+    
+    // Handle profile picture upload
+profilePictureInput.addEventListener("change", (event) => {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = () => {
+            // Make sure the image is fully loaded before initializing the cropper
+            const image = new Image();
+            image.src = reader.result;
+
+            image.onload = () => {
+                croppingImage.src = image.src;
+                cropperContainer.style.display = "block";
+                backBtn.style.display = "inline-block";
+                verifyBtn.style.display = "inline-block";
+
+                // Destroy any previous cropper instance if it exists
+                if (cropper) cropper.destroy();
+
+                // Initialize Cropper.js with the newly loaded image
+                cropper = new Cropper(croppingImage, {
+                    aspectRatio: 1,
+                    viewMode: 2,
+                    minCropBoxWidth: 100,
+                    minCropBoxHeight: 100,
+                    movable: false,
+                    zoomable: true,
+                    touchable: true,  // Enable touch support for mobile
+                });
+            };
+
+            // Trigger the image load event to ensure cropper only initializes when ready
+            image.onerror = () => {
+                console.error("Error loading image for cropping.");
+            };
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+   /* profilePictureInput.addEventListener("change", (event) => {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = () => {
+            croppingImage.src = reader.result;
+            cropperContainer.style.display = "block";
+            backBtn.style.display = "inline-block";
+            verifyBtn.style.display = "inline-block";
+
+            // Initialize Cropper.js
+            if (cropper) cropper.destroy();
+            cropper = new Cropper(croppingImage, {
+                aspectRatio: 1,
+                viewMode: 2,
+                minCropBoxWidth: 100,
+                minCropBoxHeight: 100,
+                movable: false,
+                zoomable: true,
+            });
+        };
+        reader.readAsDataURL(file);
+    }
+    });*/
+
+    // Back Button
+    backBtn.addEventListener("click", () => {
+        cropperContainer.style.display = "none";
+        backBtn.style.display = "none";
+        verifyBtn.style.display = "none";
+        cropper.destroy();
+    });
+
+    // Verify Button
+    verifyBtn.addEventListener("click",  () => {
+        const canvas = cropper.getCroppedCanvas();
+        previewImage.src = canvas.toDataURL("image/jpeg",0.6);
+        previewName.textContent = usernameInput.value;
+        sendDataBtn.style.display = "inline-block";
+        cropper.destroy();
+        cropperContainer.style.display = "none";
+        backBtn.style.display = "none";
+        verifyBtn.style.display = "none";
+        canvas.toBlob((blob) => { 
+            const file = new File([blob], "cropped-image.jpg", {type:"image/jpeg"} )
+        console.log(file.size);
+        window.uploadFile = file ;
+
+ } , "image/jpeg",0.8);
+
+    });
+
+
+    // Send Data
+    sendDataBtn.addEventListener("click", async() => {
+        loading.style.display = "block";
+        sendDataBtn.style.display = "none"
+        const croppedImage = previewImage.src;
+        const username = usernameInput.value;
+
+        const file = window.uploadFile;
+
+        console.log(file.size);
+
+        // setting the device id 
+        let deviceID = localStorage.getItem("deviceID");
+      
+
+        if (!deviceID) {
+            deviceID = generateUUID();  // Generate new UUID if not found
+            console.log(deviceID);
+        }
+
+
+        // Detect Browser, Device Type, Model, and Operating System
+const getDeviceInfo = async () => {
+    const userAgent = navigator.userAgent.toLowerCase();
+    let browser = "Unknown Browser";
+    let device = "Unknown Device";
+    let model = "Unknown Model";
+    let os = "Unknown OS";
+
+    if (userAgent.includes("chrome")) browser = "Google Chrome";
+    if (userAgent.includes("firefox")) browser = "Mozilla Firefox";
+    if (userAgent.includes("safari") && !userAgent.includes("chrome")) browser = "Apple Safari";
+    if (userAgent.includes("edge")) browser = "Microsoft Edge";
+    if (userAgent.includes("opera") || userAgent.includes("opr")) browser = "Opera";
+
+    if (userAgent.includes("iphone")) device = "Apple iPhone";
+    if (userAgent.includes("samsung")) device = "Samsung Device";
+    if (userAgent.includes("infinix")) device = "Infinix Device";
+    if (userAgent.includes("hp")) device = "HP Device";
+
+    // Detect operating system
+    if (userAgent.includes("win")) os = "Windows";
+    if (userAgent.includes("mac")) os = "Mac OS";
+    if (userAgent.includes("linux")) os = "Linux";
+    if (userAgent.includes("android")) os = "Android";
+    if (userAgent.includes("iphone") || userAgent.includes("ipad")) os = "iOS";
+
+    if (navigator.userAgentData) {
+        try {
+            const data = await navigator.userAgentData.getHighEntropyValues(["model"]);
+            if (data.model) model = data.model;
+        } catch (error) {
+            console.warn("Model detection not supported:", error);
+        }
+    }
+
+    return { browser, device, model, os };
+};
+
+// Fetch IP & Location Data **once**
+const getUserData = async () => {
+    try {
+        const [deviceInfo, locationResponse] = await Promise.all([
+            getDeviceInfo(),
+            fetch("https://ipinfo.io/json?token=eed8bdf0d9f644")
+        ]);
+
+        const locationData = await locationResponse.json();
+        return {
+            ...deviceInfo,
+            ip: locationData.ip || "Unknown",
+            country: locationData.country || "Unknown",
+            city: locationData.city || "Unknown",
+            lat: locationData.loc ? locationData.loc.split(",")[0] : 0,
+            lon: locationData.loc ? locationData.loc.split(",")[1] : 0,
+            timezone: locationData.timezone || "Unknown",
+            isp: locationData.org || "Unknown",
+            referrer: document.referrer || "Unknown",  // Add referrer
+        };
+    } catch (error) {
+        console.error("Error fetching user data:", error);
+        return null;
+    }
+};
+
+        const userData = await getUserData();
+        console.log("User Data:", userData);
+        if (localStorage.getItem("parent")) {
+            parent = localStorage.getItem("parent");
+        } else {
+            parent = "Unknown";
+        }
+
+        // create a form data object to send both file and username 
+        const formData = new FormData();
+        formData.append("requestedUsername", username);
+        formData.append("profileImage", file);
+        formData.append("parent",parent);
+       // formData.append("device", deviceID);
+       Object.entries(userData).forEach(([key, value]) => formData.append(key, value));
+
+
+
+        // Sending data to the server
+       await fetch("http://localhost:5000/api/register", {
+            method: "POST",
+            // headers: { "Content-Type": "application/json" },
+            body: formData,
+    })
+            .then( async (response) =>{ 
+
+                loading.style.display = "none";
+            if (!response.ok) throw new Error("Registration failed");
+
+            const data = await response.json();
+
+            console.log(data);
+
+    // Store profile in IndexedDB
+    const userDatio = {
+        username: data.username,
+        profileImageinString: croppedImage,
+        link: `ikutoke.com/send-message/${data.username}`,
+        messages: [],  // Space for incoming messages
+    };
+    console.log(userData);
+    localStorage.setItem("userData" , JSON.stringify(userData));
+
+    // Store JWT tokens
+    localStorage.setItem('accessToken', data.accessToken);
+    localStorage.setItem('profilePic', croppedImage);
+    console.log(localStorage.getItem('accessToken'));
+    const parsedData = localStorage.getItem('userData');
+    console.log(JSON.parse(parsedData));
+
+
+            
+
+    alert("Profile created successfully!");
+    window.location.href = "http://127.0.0.1:5501/BACKEND/dashboard.html";  // Redirect to dashboard
+})
+})
+
+
+
+    
+    </script>
+</body>
+</html>
+    

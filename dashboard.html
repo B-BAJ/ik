@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="yes_style.css">
+  <link rel="stylesheet" href="send-v.css">
+  <title>Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      
+    }
+
+    /* Navbar styles */
+    .navbar {
+      background-color: #ff6f3c;
+      color: white;
+      padding: 10px;
+      text-align: center;
+      width: 100%;
+      top: 0;
+      position: fixed;
+      z-index: 1000;
+      height: 50px;
+    }
+
+    .navbar a {
+      color: white;
+      padding: 14px 20px;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 18px;
+    }
+
+    .navbar a:hover {
+      background-color: #ff3300;
+      border-radius: 5px;
+    }
+
+    /* Container for Home and Inbox */
+    .container {
+      padding: 20px;
+    }
+
+    /* Home and Inbox sections */
+    .home{
+      display: block;
+    }
+    .inbox ,.valentineSection{
+      display: none;
+    }
+    .inbox{
+      margin-top: 40px;
+    }
+
+    .profile {
+    width: 60%;
+    background-color: #ff6f3c;
+    display: flex;
+    height: 30%;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    border-radius:20px;
+
+
+}
+
+.profile-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.profile-pic{
+    max-width:  100px;
+    max-height: 100px;
+    object-fit: cover;
+    border-radius: 50%;
+    border-radius:2px solid ;
+    box-shadow: 0 4px 6px rgba(0,0,0, 0.2);
+
+}
+
+.link{
+    justify-self: center;
+    background-color: rgba(247, 229, 171, 0.913);
+    padding: 4px;
+    border-radius: 8px;
+    font-size: larger;
+    opacity: 0.7;
+}
+
+
+
+a{
+    color: #000000;
+    text-decoration: none;
+    font-size: larger;
+   
+}
+
+
+.middle-content{
+  display: flex;
+  flex-direction: column;
+}
+
+.content{
+    height: 90vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center ;
+    background-color: rgb(222, 250, 250);
+    margin: 10px;
+    box-shadow:   rgb(0, 0, 0);
+}
+
+    /* Modal styles */
+    #modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      justify-content: center;
+      align-items: center;
+      z-index: 1001;
+      overflow: auto;
+    }
+
+    .modal-content {
+      position: relative;
+      width: 90%;
+      max-width: 500px;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+      margin-top: 100px;
+      padding-top: 180px;
+      margin-bottom: 150px;
+      
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 80px;
+      right: 10px;
+      background: black;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .close-btn:hover {
+      background: #000000;
+    }
+    .status-card {
+      margin: 20px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-upper {
+      background-color: #ff6f3c;
+      color: white;
+      padding: 10px;
+    }
+
+    .card-lower {
+      padding: 12px;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      resize: none;
+    }
+
+    .copy,.Share,.view-btn,#generateCardBtn,#baxt,#shareButton,.close-btn {
+      margin-top: 10px;
+      padding: 10px 20px;
+      background-color: #ff6f3c;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      width: 300px;
+      height: 40px;
+      border-radius: 10px;
+      background-color: #ff6f3c;
+    }
+
+    .copy:hover,.Share:hover,.view-btn:hover,#generateCardBtn:hover,#baxt:hover,#shareButton:hover {
+      background-color: #e65c2a;
+    }
+    
+
+    .baxt-div{
+      display: flex;
+      justify-content: space-between;
+      align-items: space-between;
+    }
+
+    #baxt{
+      width: 200px;
+    }
+    #shareButton{
+      width: 200px;
+    }
+
+    
+
+    /* Message list styles */
+    .message-list {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    .message-item {
+      background-color: #f9f9f9;
+      margin: 10px 0;
+      padding: 15px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .view-btn {
+      padding: 8px 16px;
+      background-color: #ff6f3c;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .view-btn:hover {
+      background-color: #45a049;
+    }
+    #all-filter, #delete-all-message{
+      margin-left:10px ;
+      background-color: #ff6f3c;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      width: 100px;
+      height: 25px;
+    }
+
+    
+
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <div class="navbar">
+    <a href="#" id="homeTab" >Home</a>
+    <a href="#" id="valentine"><div id="valentine-card">Valentine special</div></a>
+    <a href="#" id="inboxTab">Inbox</a>
+  </div>
+
+  <!-- Container for Home and Inbox -->
+  <div class="container">
+    <!-- Home Section -->
+    <div class="home">
+      <div class="message">
+        <h2>Welcome to your Dashboard!</h2>
+        <p>This is the home page. You can switch to Inbox to see your messages.</p>
+      </div>
+
+      
+    <div class="content">
+        <div class="profile">
+            <div class="profile-container">
+                <img src="asssets/user.png" alt="profile" class="profile-pic" id="profile-pic">
+            </div>
+         <p class="username" id="username">Enzoh_deadly</p>
+
+        </div>
+
+        <div class="middle-content">
+        <div class="copy-link">
+            <h2>Copy the link </h2>
+            <p class="link"><a href="https://ikutoke.com/p/@Enzoh_deadly" target="_blank" id="a-link">ikutoke.com/p/Enzoh_deadly</a></p>
+            <button class="copy">copy your ikutoke link</button>
+        </div>
+
+        <div class="sharing">
+            <h2>Share your link to your status </h2>
+            <p class="link"></p>
+            <button class="Share">Share link </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+    </div>
+
+    <!-- Valentine Section -->
+     <div class="valentineSection">
+
+    <div class="V-container">
+      <div id="separator">
+        <h2>Copy this link and send it to any one (your crush) 
+
+          <br>to get a valentine message from them</h2>
+
+        <div class="v-link">
+          <a href="https://ikutoke.com/p/@Enzoh_deadly" target="_blank">ikutoke.com/p/Enzoh_deadly</a>
+        </div>
+
+        <h3>this is how this cute animation will appear to them try out</h3>
+      </div>
+
+         <h1>Will you be my Valentine?</h1>
+          <div class="buttons">
+              <button class="yes-button" onclick="handleYesClick()">Yes</button>
+              <button class="no-button" onclick="handleNoClick()">No</button>
+          </div>
+        <div class="gif_container">
+            <img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExbW5lenZyZHI5OXM2eW95b3pmMG40cWVrMDhtNjVuM3A4dGNxa2g2dSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/VM1fcpu2bKs1e2Kdbj/giphy.gif" alt="Cute GIF">
+        </div>
+
+    </div>
+
+      <div class="yes-container">
+        <h1 class="header_text">Knew you would say yes!</h1>
+        <div class="gif_container">
+            <img src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExMmo3c3l5ODh3ZGN6NHhhaDE2Mjg1ZjkwOXczdDFxbWM3dTBtaW9zaiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/9XY4f3FgFTT4QlaYqa/giphy.gif">
+        </div>
+        <button class="no-button" onclick="unhandleYesClick()">See it again</button>
+        <h2>here they will send you any message</h2>
+        <h1>send me any lovely message please
+          <br>or your name or a hint
+        </h1>
+
+        <div class="main-s">
+          <div class="profile-s">
+            <div class="img-div-s">
+              <img src="asssets/user.png" alt="upload" class="profile-picture-v">
+            </div>
+        
+            <div class="info">
+                <p class="username">anonymous ..</p>
+                
+                <p class="prompt">happy valentine </p>
+        
+           </div>
+        
+           </div>
+        
+            <form id="messageForm">
+                <textarea name="message" id="message-s" placeholder="Sema tu hio kitu ikutoke..." required></textarea>
+                <button type="submit" class="sender" aria-placeholder="">Send Message</button>
+              </form>
+        
+           <a href="/create-profile.html" class="create-profile"> <button class="create-profile">create profile</button></a>
+        
+        </div> 
+      </div>
+
+    </div>
+    
+
+    
+
+    <!-- Inbox Section -->
+    <div class="inbox" style="margin-left: 10px;">
+      <h2 style="margin: top 10px;
+       ;">inbox</h2>
+      <div style="display: flex; flex-direction: row; justify-content: flex-start; ">
+      <button style="display: inline-block;"id="all-filter">All messages</button>
+      <button style="display: inline-block;" id="delete-all-message" >Delete all</button>
+    </div>
+      <ul class="message-list" id="messageList">
+        <!-- Dynamically populated messages will appear here -->
+      </ul>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="modal">
+    <div class="modal-content">
+      <button class="close-btn" id="closeModalBtn">&times;</button>
+      
+      <!-- Status Card inside modal -->
+      <div id="statusCard" class="status-card">
+        <div class="card-upper">
+          <h3>Anonymous Message</h3>
+          <h4>Sema hio kitu ikutoke</h4>
+        </div>
+        <div class="card-lower">
+          <p id="message">This is the anonymous message.</p>
+        </div>
+      </div>
+
+      <!-- Reply textarea -->
+      <textarea id="replyInput" rows="5" placeholder="Reply to the anonymous message"></textarea>
+      <button id="generateCardBtn" onclick="disappearA()">OK</button>
+      <div id="generatedCardContainer"></div>
+     <div class="baxt-div">
+      <button id="baxt" style="display: none;" onclick="reappearA()">Change reply</button>
+      <button id="shareButton" style="display: none;">Share Your Reply</button>
+     </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  
+  <script src="scription 2.js"></script>
+</body>
+</html>
