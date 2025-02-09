@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="yes_style.css">
+    <link rel="stylesheet" href="send-v.css">
+    <title>Document</title>
+</head>
+<body>
+    
+    <div class="V-container">
+        <h1>Will you be my Valentine?</h1>
+         <div class="buttons">
+             <button class="yes-button" onclick="handleYesClick()">Yes</button>
+             <button class="no-button" onclick="handleNoClick()">No</button>
+         </div>
+       <div class="gif_container">
+           <img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExbW5lenZyZHI5OXM2eW95b3pmMG40cWVrMDhtNjVuM3A4dGNxa2g2dSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/VM1fcpu2bKs1e2Kdbj/giphy.gif" alt="Cute GIF">
+       </div>
+       <a href="/create-profile.html" class="create-profile" > <button class="create-profile" style="margin-bottom: 80px;">create profile</button></a>
+   </div>
+
+     <div class="yes-container">
+       <h1 class="header_text">Knew you would say yes!</h1>
+       <div class="gif_container">
+           <img src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExMmo3c3l5ODh3ZGN6NHhhaDE2Mjg1ZjkwOXczdDFxbWM3dTBtaW9zaiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/9XY4f3FgFTT4QlaYqa/giphy.gif">
+       </div>
+       <button class="no-button" onclick="unhandleYesClick()">See it again</button>
+       <h2>here they will send you any message</h2>
+       <h1>send me any lovely message please
+         <br>or your name or a hint
+       </h1>
+
+     
+
+       <div class="main-s">
+         <div class="profile-s">
+           <div class="img-div-s">
+             <img src="asssets/user.png" alt="upload" class="profile-picture-v">
+           </div>
+       
+           <div class="info">
+               <p class="username">anonymous ..</p>
+               
+               <p class="prompt">happy valentine </p>
+       
+          </div>
+       
+          </div>
+       
+           <form id="messageForm">
+               <textarea name="message" id="message-s" placeholder="Sema tu hio kitu ikutoke..." required></textarea>
+               <button type="submit" class="sender" aria-placeholder="">Send Message</button>
+             </form>
+       
+          <a href="/create-profile.html" class="create-profile"> <button class="create-profile" style="margin-bottom: 80px;">create profile</button></a>
+       
+       </div> 
+     </div>
+
+   </div>
+</div>
+   <script src="script.js"></script>
+
+<script>
+      
+// Get username from URL parameters
+const urlParams = new URLSearchParams(window.location.search);
+const username = urlParams.get("to") || null;
+console.log("Extracted Username:", username);
+
+// Fetch User Profile
+const fetchUser = async (username) => {
+    if (!username) {
+        console.error("No username provided.");
+        return;
+    }
+
+    try {
+        const response = await fetch(`/api/profile/${username}`);
+        const user = await response.json();
+        console.log(user);
+        if (user.error) {
+            console.error(user.error);
+            return;
+        }
+
+        document.querySelector(".username").textContent = `@${user.username}`;
+        document.querySelector(".profile-picture").src =  user.profileImageUrl || "default-profile.png";
+    } catch (error) {
+        console.error("Error fetching user:", error);
+    }
+};
+
+window.onload = fetchUser(username);
+
+/*
+async function getClientIPData() {
+    const apis = [
+       // { url: "https://ipinfo.io/json", key: "ip", fallback: "unknown" },
+      { url: "http://ipapi.com/json/", key: "query", fallback: "unknown" },
+      //  { url: "https://api64.ipify.org?format=json", key: "ip", fallback: "unknown" },
+        //{ url: "https://ipwhois.app/json/", key: "ip", fallback: "unknown" }
+    ];
+
+    for (let api of apis) {
+        try {
+            let response = await fetch(api.url);
+            if (!response.ok) throw new Error("API limit reached or failed");
+            let data = await response.json();
+
+            return {
+                ip: data[api.key] || "unknown",
+                country: data.country || "unknown",
+                region: data.region || "unknown",
+                city: data.city || "unknown",
+                latitude: data.lat || 0,
+                longitude: data.lon || 0,
+                isp: data.isp || "unknown"
+            };
+        } catch (error) {
+            console.warn(`API failed: ${api.url}, trying next...`);
+        }
+    }
+
+    // If all APIs fail, return default values
+    return {
+        ip: "unknown",
+        country: "unknown",
+        region: "unknown",
+        city: "unknown",
+        latitude: 0,
+        longitude: 0,
+        isp: "unknown"
+    };
+}
+
+// Example usage
+getClientIPData().then(data => console.log(data));*/
+
+// Detect Browser, Device Type, Model, and Operating System
+const getDeviceInfo = async () => {
+    const userAgent = navigator.userAgent.toLowerCase();
+    let browser = "Unknown Browser";
+    let device = "Unknown Device";
+    let model = "Unknown Model";
+    let os = "Unknown OS";
+
+    if (userAgent.includes("chrome")) browser = "Google Chrome";
+    if (userAgent.includes("firefox")) browser = "Mozilla Firefox";
+    if (userAgent.includes("safari") && !userAgent.includes("chrome")) browser = "Apple Safari";
+    if (userAgent.includes("edge")) browser = "Microsoft Edge";
+    if (userAgent.includes("opera") || userAgent.includes("opr")) browser = "Opera";
+
+    if (userAgent.includes("iphone")) device = "Apple iPhone";
+    if (userAgent.includes("samsung")) device = "Samsung Device";
+    if (userAgent.includes("infinix")) device = "Infinix Device";
+    if (userAgent.includes("hp")) device = "HP Device";
+
+    // Detect operating system
+    if (userAgent.includes("win")) os = "Windows";
+    if (userAgent.includes("mac")) os = "Mac OS";
+    if (userAgent.includes("linux")) os = "Linux";
+    if (userAgent.includes("android")) os = "Android";
+    if (userAgent.includes("iphone") || userAgent.includes("ipad")) os = "iOS";
+
+    if (navigator.userAgentData) {
+        try {
+            const data = await navigator.userAgentData.getHighEntropyValues(["model"]);
+            if (data.model) model = data.model;
+        } catch (error) {
+            console.warn("Model detection not supported:", error);
+        }
+    }
+
+    return { browser, device, model, os };
+};
+
+// Fetch IP & Location Data **once**
+const getUserData = async () => {
+    try {
+        const [deviceInfo, locationResponse] = await Promise.all([
+            getDeviceInfo(),
+            fetch("https://ipinfo.io/json?token=eed8bdf0d9f644")
+        ]);
+
+        const locationData = await locationResponse.json();
+        return {
+            ...deviceInfo,
+            ip: locationData.ip || "Unknown",
+            country: locationData.country || "Unknown",
+            city: locationData.city || "Unknown",
+            lat: locationData.loc ? locationData.loc.split(",")[0] : 0,
+            lon: locationData.loc ? locationData.loc.split(",")[1] : 0,
+            timezone: locationData.timezone || "Unknown",
+            isp: locationData.org || "Unknown",
+            referrer: document.referrer || "Unknown",  // Add referrer
+        };
+    } catch (error) {
+        console.error("Error fetching user data:", error);
+        return null;
+    }
+};
+
+const userData = getUserData();
+console.log("User Data:", userData);
+
+   const parent = localStorage.getItem("parent");
+   if(!parent){
+       localStorage.setItem("parent", username);
+   }
+
+// Handle Message Submission
+document.getElementById("messageForm").onsubmit = async (e) => {
+    e.preventDefault();
+
+    if (!username) {
+        alert("Username is missing!");
+        return;
+    }
+
+    const message = document.getElementById("message").value;
+    const userData = await getUserData();
+
+    if (!userData) {
+        alert("Failed to retrieve user data.");
+        return;
+    }
+
+    console.log("User Data:", userData);
+
+    // Prepare form data
+    const messageForm = new FormData();
+    messageForm.append("toUser", username);
+    messageForm.append("message", message);
+    Object.entries(userData).forEach(([key, value]) => messageForm.append(key, value));
+
+    // Send data to server
+    try {
+        const response = await fetch("http://localhost:5000/sendmessage", {
+            method: "POST",
+            body: messageForm,
+        });
+
+        if (response.ok) {
+            alert("Message sent!");
+            document.getElementById("message").value = "";
+        } else {
+            alert("Failed to send message.");
+        }
+    } catch (error) {
+        console.error("Error sending message:", error);
+        alert("Error sending message.");
+    }
+};
+</script>
+</body>
+</html>
