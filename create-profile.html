@@ -290,7 +290,7 @@ profilePictureInput.addEventListener("change", (event) => {
 
                 // Initialize Cropper.js with the newly loaded image
                 cropper = new Cropper(croppingImage, {
-                    aspectRatio: 1,
+                    aspectRatio: 16/9,
                     viewMode: 2,
                     minCropBoxWidth: 100,
                     minCropBoxHeight: 100,
