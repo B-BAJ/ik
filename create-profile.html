@@ -271,7 +271,60 @@ window.onload = handleProfileCheck;
     });
 
     // Handle profile picture upload
-        profilePictureInput.addEventListener("change", (event) => {
+
+        profilePictureInput.addEventListener("change", async (event) => {
+    const file = event.target.files[0];
+
+    if (!file) return;
+
+    // Check if the file is HEIC
+    if (file.type === "image/heic" || file.type === "image/heif") {
+        try {
+            const convertedBlob = await heic2any({
+                blob: file,
+                toType: "image/jpeg",
+                quality: 0.8
+            });
+
+            file = new File([convertedBlob], file.name.replace(/\.heic|\.heif/i, ".jpg"), { type: "image/jpeg" });
+        } catch (error) {
+            console.error("HEIC conversion failed:", error);
+            alert("Failed to convert HEIC image. Please use JPEG or PNG.");
+            return;
+        }
+    }
+
+    // Now proceed with FileReader or createObjectURL
+    const objectURL = URL.createObjectURL(file);
+    const image = new Image();
+    image.src = objectURL;
+
+    image.onload = () => {
+        croppingImage.src = image.src;
+        cropperContainer.style.display = "block";
+
+        if (cropper) cropper.destroy();
+        cropper = new Cropper(croppingImage, {
+            aspectRatio: 1,
+            viewMode: 2,
+            minCropBoxWidth: 100,
+            minCropBoxHeight: 100,
+            movable: false,
+            responsive: true,
+            zoomable: true,
+            touchable: true,
+        });
+
+        URL.revokeObjectURL(objectURL);
+    };
+
+    image.onerror = () => {
+        console.error("Error loading image for cropping.");
+        URL.revokeObjectURL(objectURL);
+    };
+});
+
+/*        profilePictureInput.addEventListener("change", (event) => {
     const file = event.target.files[0];
 
     if (!file) return;
@@ -330,7 +383,7 @@ window.onload = handleProfileCheck;
         console.error("Error loading image for cropping.");
         URL.revokeObjectURL(objectURL);
     };
-});
+});*/
 
 
      /*   profilePictureInput.addEventListener("change", (event) => {
