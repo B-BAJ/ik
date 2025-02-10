@@ -290,11 +290,12 @@ profilePictureInput.addEventListener("change", (event) => {
 
                 // Initialize Cropper.js with the newly loaded image
                 cropper = new Cropper(croppingImage, {
-                    aspectRatio: 16/9,
+                    aspectRatio: 1,
                     viewMode: 2,
                     minCropBoxWidth: 100,
                     minCropBoxHeight: 100,
                     movable: false,
+                    responsive:true;
                     zoomable: true,
                     touchable: true,  // Enable touch support for mobile
                 });
