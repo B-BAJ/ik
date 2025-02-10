@@ -154,6 +154,10 @@
     </style>
 </head>
 <body>
+
+  <h2>  Input your username below to create a dashboard and manage your link now 
+  <br> also select an image which others can identify you and it should not be too big
+  </h2>
     <h1>Profile Registration</h1>
     <div class="form-container">
         <form id="registrationForm">
@@ -268,9 +272,63 @@ window.onload = handleProfileCheck;
 
     // Handle profile picture upload
 
+        profilePictureInput.addEventListener("change", (event) => {
+    const file = event.target.files[0];
+
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = () => {
+            const image = new Image();
+            image.src = reader.result;
+
+            image.onload = () => {
+                // Resize the image if it's too large
+                const MAX_WIDTH = 1000;  // Set a reasonable width limit
+                const MAX_HEIGHT = 1000; // Set a reasonable height limit
+                const canvas = document.createElement("canvas");
+                const ctx = canvas.getContext("2d");
+
+                let width = image.width;
+                let height = image.height;
+
+                // Scale down the image proportionally
+                if (width > MAX_WIDTH || height > MAX_HEIGHT) {
+                    const scale = Math.min(MAX_WIDTH / width, MAX_HEIGHT / height);
+                    width = width * scale;
+                    height = height * scale;
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+                ctx.drawImage(image, 0, 0, width, height);
+
+                // Convert canvas back to Base64
+                croppingImage.src = canvas.toDataURL("image/jpeg", 0.8); // Reduce quality for performance
+                cropperContainer.style.display = "block";
+
+                if (cropper) cropper.destroy();
+                cropper = new Cropper(croppingImage, {
+                    aspectRatio: 1,
+                    viewMode: 2,
+                    minCropBoxWidth: 100,
+                    minCropBoxHeight: 100,
+                    movable: false,
+                    responsive: true,
+                    zoomable: true,
+                    touchable: true,
+                });
+            };
+
+            image.onerror = () => console.error("Error loading image for cropping.");
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+
     
     // Handle profile picture upload
-profilePictureInput.addEventListener("change", (event) => {
+/*profilePictureInput.addEventListener("change", (event) => {
     const file = event.target.files[0];
     if (file) {
         const reader = new FileReader();
@@ -295,7 +353,7 @@ profilePictureInput.addEventListener("change", (event) => {
                     minCropBoxWidth: 100,
                     minCropBoxHeight: 100,
                     movable: false,
-                    responsive:true;
+                    responsive:true,
                     zoomable: true,
                     touchable: true,  // Enable touch support for mobile
                 });
@@ -308,7 +366,7 @@ profilePictureInput.addEventListener("change", (event) => {
         };
         reader.readAsDataURL(file);
     }
-});
+});*/
 
    /* profilePictureInput.addEventListener("change", (event) => {
     const file = event.target.files[0];
