@@ -271,8 +271,69 @@ window.onload = handleProfileCheck;
     });
 
     // Handle profile picture upload
-
         profilePictureInput.addEventListener("change", (event) => {
+    const file = event.target.files[0];
+
+    if (!file) return;
+
+    // Check file size limit
+    if (file.size > 10 * 1024 * 1024) { // 10MB limit
+        alert("Image is too large! Please upload an image under 10MB.");
+        return;
+    }
+
+    const objectURL = URL.createObjectURL(file); // Efficient memory usage
+    const image = new Image();
+    image.src = objectURL;
+
+    image.onload = () => {
+        // Resize image if necessary before passing it to Cropper.js
+        const MAX_WIDTH = 1000;
+        const MAX_HEIGHT = 1000;
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+
+        let width = image.width;
+        let height = image.height;
+
+        if (width > MAX_WIDTH || height > MAX_HEIGHT) {
+            const scale = Math.min(MAX_WIDTH / width, MAX_HEIGHT / height);
+            width *= scale;
+            height *= scale;
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        ctx.drawImage(image, 0, 0, width, height);
+
+        // Convert to Base64
+        croppingImage.src = canvas.toDataURL("image/jpeg", 0.8); 
+
+        cropperContainer.style.display = "block";
+        if (cropper) cropper.destroy();
+
+        cropper = new Cropper(croppingImage, {
+            aspectRatio: 1,
+            viewMode: 2,
+            minCropBoxWidth: 100,
+            minCropBoxHeight: 100,
+            movable: false,
+            responsive: true,
+            zoomable: true,
+            touchable: true,
+        });
+
+        URL.revokeObjectURL(objectURL); // Clean up memory
+    };
+
+    image.onerror = () => {
+        console.error("Error loading image for cropping.");
+        URL.revokeObjectURL(objectURL);
+    };
+});
+
+
+     /*   profilePictureInput.addEventListener("change", (event) => {
     const file = event.target.files[0];
 
     if (file) {
@@ -323,7 +384,7 @@ window.onload = handleProfileCheck;
         };
         reader.readAsDataURL(file);
     }
-});
+});*/
 
 
     
